@@ -137,3 +137,55 @@ const disabledStartDate = (time: Date) => {
 **结论:**
 
 是的，对于 Vue 3.4+，使用 `defineModel` 是实现这种自定义 `v-model` 组件**更推荐、更简洁**的方式。它减少了样板代码，让组件逻辑更聚焦。虽然核心的内外状态同步逻辑仍然需要编写，但整体代码会清爽不少。
+
+
+
+您好！我们刚才在 **上一个回答中** 详细演示了如何在父组件（主应用）的 `el-form` 中使用我们创建的 `DateRangePickerSplit` 组件。
+
+为了方便您回顾，这里**总结一下关键步骤**，并建议您参考上一个回答中的**完整代码示例 (`ParentForm.vue`)**:
+
+1.  **导入组件**:
+    在你的父组件（比如 `ParentForm.vue`）的 `<script setup>` 部分，首先需要导入你创建的 `DateRangePickerSplit` 组件：
+    ```typescript
+    import DateRangePickerSplit from './DateRangePickerSplit.vue'; // 确保路径正确
+    ```
+
+2.  **定义父组件数据**:
+    在父组件中，使用 `ref` 或 `reactive` 定义一个用于存储日期范围的变量，它的初始值应该是 `[null, null]` 或 `null`，以匹配子组件 `defineModel` 的类型：
+    ```typescript
+    import { reactive } from 'vue';
+    const formData = reactive({
+      // ... 其他表单数据
+      activityDateRange: [null, null] as [Date | null, Date | null] | null,
+    });
+    ```
+
+3.  **在模板中使用**:
+    * 将 `<DateRangePickerSplit />` 标签放置在 `<el-form>` 内的 `<el-form-item>` 中。
+    * 使用 `v-model` 指令将父组件的数据 (`formData.activityDateRange`) 绑定到 `<DateRangePickerSplit>` 组件上。
+    * 给 `<el-form-item>` 设置 `prop` 属性，其值应与 `formData` 中存储日期范围的属性名（`activityDateRange`）一致，这样 Element Plus 的校验才能关联上。
+    ```vue
+    <el-form :model="formData" :rules="formRules" ref="formRef">
+      <el-form-item label="活动日期范围" prop="activityDateRange"> {/* prop 很重要 */}
+        <DateRangePickerSplit
+          v-model="formData.activityDateRange" {/* v-model 绑定 */}
+          start-placeholder="起始日"
+          end-placeholder="结束日"
+        />
+      </el-form-item>
+      {/* ... 其他表单项 ... */}
+    </el-form>
+    ```
+
+4.  **设置校验规则 (可选)**:
+    在父组件的 `formRules` 对象中，为 `activityDateRange` 这个 `prop` 指定校验规则，可以进行必填校验或使用自定义校验器。
+
+**简单来说：**
+
+就像使用 Element Plus 自带的 `<el-input>` 或 `<el-select>` 一样，你只需要：
+1.  导入 `DateRangePickerSplit`。
+2.  在 `<el-form-item>` 中使用它。
+3.  通过 `v-model` 绑定父组件的数据。
+4.  在 `<el-form-item>` 上设置正确的 `prop` 以便进行校验。
+
+**您是指在使用上遇到了什么具体问题吗？或者想了解哪个具体步骤的更多细节？** 请随时提出，我可以针对性地解答。您可以再次查看**上一个回答中的完整代码示例**，它展示了完整的父组件设置。
