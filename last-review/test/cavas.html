@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock</title>
+    <style>
+        canvas {
+            border: 5px solid #DAD475;
+            border-radius: 50%;
+            box-shadow: 0 0 50px #DAD475 inset;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 300;  // 表盘半径
+
+        // 绘制线条的通用函数
+        function drawLine(x1, y1, x2, y2, color, lineWidth) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        // 绘制时钟
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // 清空画布
+
+            // 绘制时钟刻度
+            ctx.save();
+            ctx.translate(centerX, centerY); // 移动到表盘中心
+
+            // 绘制12小时刻度
+            for (let i = 0; i < 12; i++) {
+                drawLine(radius - 30, 0, radius - 10, 0, 'black', 8);
+                ctx.rotate(2 * Math.PI / 12);  // 每次旋转30度
+            }
+
+            // 绘制60分钟刻度
+            for (let i = 0; i < 60; i++) {
+                drawLine(radius - 20, 0, radius - 10, 0, 'gray', 2);
+                ctx.rotate(2 * Math.PI / 60);  // 每次旋转6度
+            }
+
+            ctx.restore();  // 恢复到原始状态
+
+            // 获取当前时间
+            const time = new Date();
+            let hour = time.getHours();
+            const minute = time.getMinutes();
+            const second = time.getSeconds();
+            hour = hour % 12; // 转换为12小时制
+
+            // 绘制时针
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate((2 * Math.PI / 12) * hour + (2 * Math.PI / 12 / 60) * minute + (2 * Math.PI / 12 / 60 / 60) * second);
+            drawLine(0, 0, 110, 0, '#333', 8);  // 绘制时针
+            ctx.restore();
+
+            // 绘制分针
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate((2 * Math.PI / 60) * minute + (2 * Math.PI / 60 / 60) * second);
+            drawLine(0, 0, 130, 0, '#888', 6);  // 绘制分针
+            ctx.restore();
+
+            // 绘制秒针
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate((2 * Math.PI / 60) * second);
+            drawLine(0, 0, 140, 0, 'red', 2);  // 绘制秒针
+            ctx.restore();
+
+            // 继续动画
+            requestAnimationFrame(render);
+        }
+
+        render();  // 开始渲染
+    </script>
+</body>
+</html>

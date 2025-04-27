@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		#clock{
+			width: 300px;
+			height: 300px;
+			border:5px solid pink;
+			position: relative;
+			border-radius: 50%;
+			box-shadow: 0 0 50px #DAD475 inset;
+		}
+		#clock>div{
+			width: 20px;
+			height: 20px;
+			/*background-color: cyan;*/
+			/*border-radius: 50%;*/
+			position: absolute;
+			left:calc(50% - 10px);
+			top:0;
+			z-index: 10;
+			/*将每一个时刻的变换参照点设置为表盘中心*/
+			transform-origin: 10px 150px;
+			text-align: center;
+		}
+		#clock>div>div{
+			transform-origin: 10px 10px;
+		}
+		.h{
+			display: block;
+			width: 6px;
+			height: 80px;
+			background-color: #95DA3B;
+			position: absolute;
+			left:calc(50% - 3px);
+			top:86px;
+			z-index: 1000;
+			transform-origin:50% 80%; 
+			border-radius:50%;
+		}
+		.m{
+			display: block;
+			width: 4px;
+			height: 120px;
+			background-color: #DA88BA;
+			position: absolute;
+			left:calc(50% - 2px);
+			top:54px;
+			z-index: 100;
+			transform-origin:50% 80%; 
+			border-radius:50%;
+		}
+		.s{
+			display: block;
+			width: 4px;
+			height: 140px;
+			background-color:#DA935C;
+			position: absolute;
+			left:calc(50% - 2px);
+			top:38px;
+			z-index: 10;
+			transform-origin:50% 80%; 
+			border-radius:50%;
+ 
+		}
+		img{
+			width: 180px;
+			height: 180px;
+			display: block;
+			position: absolute;
+			left:62px;
+			top:38px;
+			z-index: 5;
+		}
+		.spike{
+			display: block;
+			width: 10px;
+			height: 10px;
+			background-color: #4C78DA;
+			border-radius: 50%;
+			position: absolute;
+			left:145px;
+			top:145px;
+			z-index: 5000;
+		}
+ 
+	</style>
+</head>
+<body>
+	<div id="clock">
+		<div><div>12</div></div>
+		<div><div>1</div></div>
+		<div><div>2</div></div>
+		<div><div>3</div></div>
+		<div><div>4</div></div>
+		<div><div>5</div></div>
+		<div><div>6</div></div>
+		<div><div>7</div></div>
+		<div><div>8</div></div>
+		<div><div>9</div></div>	
+		<div><div>10</div></div>	
+		<div><div>11</div></div>
+		
+		<!-- 表的指针 -->
+		<span class="h"></span>
+		<span class="m"></span>
+		<span class="s" ></span>
+		<span class="spike"></span>
+ 
+		<img src="./img/8.jpg" alt="">
+ 
+	</div>
+ 
+</body>
+<script>
+	var ds = document.querySelectorAll("#clock>div");
+	for(var i=0;i<ds.length;i++){
+		//12个刻度共360deg,那么一个刻度就需要需要30deg
+		ds[i].style.transform="rotate("+30*i+"deg)";
+	}
+   var ds1 = document.querySelectorAll("#clock>div>div");
+	for(var i=0;i<ds1.length;i++){
+		//父级元素发生旋转,子级元素也会随之发生旋转,所以刻度显示的数字会发生角度倾斜,需要将每一个div中的span逆时针旋转相同的角度
+		//把数字摆正
+		ds1[i].style.transform="rotate("+(-30*i)+"deg)";
+	}
+	inniTime();
+	//初始哈时间的函数,在函数中获取当前时间的转换角度并显示在表盘上
+   setInterval(inniTime,1000);
+   function inniTime(){
+   	//获取时间并且将时间转换为对应的角度
+   		var date = new Date();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    // console.log(minutes);
+    var seconds = date.getSeconds();
+    // console.log(seconds);
+    var s = document.querySelector(".s");
+   	var m = document.querySelector(".m");
+   	var h = document.querySelector(".h");
+   	//因为得到的是24小时的时间,钟表上只有12个小时,所以对时间需要换算
+    // hours = hours>12?hours-12:hours;
+    if(hours>12){
+    	hours = hours-12;
+    }
+   // console.log(hours);
+      //将秒钟转换为角度
+   	  s.style.transform="rotate("+seconds*6+"deg)";
+   	  //将分钟转换为角度,分钟的角度由两部分组成,一部分是自己获取的分钟影响自己旋转的角度,一部分是秒钟影响自己所旋转的角度
+   	  m.style.transform="rotate("+(minutes*6+seconds *6/60)+"deg)";
+   	  //将小时转换为角度.小时的角度由两部分组成,一部分是自己获取的小时影响自己旋转的角度,一部分是分钟影响自己做旋转的角度
+   	  h.style.transform="rotate("+(hours*30+(minutes*30)/60)+"deg)";
+   	}
+   	
+ 
+</script>
+</html>
